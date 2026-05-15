@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+</head>
+<body>
+    
+</body>
+</html>
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pookie AI - Voice Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.03);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --glass-highlight: rgba(255, 255, 255, 0.12);
+        --accent: #a78bfa;
+        --accent-glow: rgba(167, 139, 250, 0.4);
+        --text-primary: rgba(255, 255, 255, 0.95);
+        --text-secondary: rgba(255, 255, 255, 0.5);
+        --text-muted: rgba(255, 255, 255, 0.3);
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #0a0a0f;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* Animated Background */
+    .bg-orb {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(120px);
+        opacity: 0.15;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .bg-orb-1 {
+        width: 600px;
+        height: 600px;
+        background: #7c3aed;
+        top: -200px;
+        left: -100px;
+        animation: orbFloat1 20s ease-in-out infinite;
+    }
+
+    .bg-orb-2 {
+        width: 500px;
+        height: 500px;
+        background: #ec4899;
+        bottom: -150px;
+        right: -100px;
+        animation: orbFloat2 25s ease-in-out infinite;
+    }
+
+    .bg-orb-3 {
+        width: 400px;
+        height: 400px;
+        background: #06b6d4;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation: orbFloat3 18s ease-in-out infinite;
+    }
+
+    @keyframes orbFloat1 {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(50px, 30px) scale(1.1); }
+        66% { transform: translate(-30px, 60px) scale(0.9); }
+    }
+
+    @keyframes orbFloat2 {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(-40px, -50px) scale(1.15); }
+        66% { transform: translate(60px, -20px) scale(0.95); }
+    }
+
+    @keyframes orbFloat3 {
+        0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.15; }
+        50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.08; }
+    }
+
+    /* Noise Texture Overlay */
+    .noise-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.03;
+        pointer-events: none;
+        z-index: 1;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    /* Main Container */
+    .app-container {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 480px;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 0 24px;
+    }
+
+    /* Header */
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 0 16px;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .brand-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(167, 139, 250, 0.3), rgba(236, 72, 153, 0.3));
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(167, 139, 250, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: 800;
+        color: #fff;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .brand-text {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.5px;
+    }
+
+    .brand-text span {
+        background: linear-gradient(135deg, #a78bfa, #ec4899);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Status Bar */
+    .status-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 0;
+        margin-top: 8px;
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    .status-dot.error {
+        background: #ef4444;
+        box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+    }
+
+    .status-dot.loading {
+        background: #f59e0b;
+        box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .status-text {
+        font-size: 13px;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    /* Main Visual Area */
+    .visual-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        min-height: 0;
+    }
+
+    /* The Goal Circle - Voice Orb */
+    .voice-orb-container {
+        position: relative;
+        width: 280px;
+        height: 280px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .voice-orb {
+        position: relative;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, 
+            rgba(167, 139, 250, 0.15), 
+            rgba(236, 72, 153, 0.1),
+            rgba(6, 182, 212, 0.1));
+        backdrop-filter: blur(40px);
+        border: 1px solid rgba(167, 139, 250, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 10;
+    }
+
+    .voice-orb:hover {
+        transform: scale(1.05);
+        border-color: rgba(167, 139, 250, 0.4);
+        box-shadow: 
+            0 0 60px rgba(167, 139, 250, 0.2),
+            inset 0 0 40px rgba(167, 139, 250, 0.05);
+    }
+
+    .voice-orb.listening {
+        animation: orbListening 1.5s ease-in-out infinite;
+    }
+
+    .voice-orb.speaking {
+        animation: orbSpeaking 0.8s ease-in-out infinite;
+    }
+
+    .voice-orb.processing {
+        animation: orbProcessing 1s ease-in-out infinite;
+        border-color: rgba(245, 158, 11, 0.4);
+    }
+
+    @keyframes orbListening {
+        0%, 100% { 
+            transform: scale(1); 
+            box-shadow: 0 0 40px rgba(167, 139, 250, 0.15);
+        }
+        50% { 
+            transform: scale(1.08); 
+            box-shadow: 0 0 80px rgba(167, 139, 250, 0.3);
+        }
+    }
+
+    @keyframes orbSpeaking {
+        0%, 100% { transform: scale(1); }
+        25% { transform: scale(1.04); }
+        75% { transform: scale(0.98); }
+    }
+
+    @keyframes orbProcessing {
+        0%, 100% { 
+            transform: scale(1);
+            box-shadow: 0 0 40px rgba(245, 158, 11, 0.15);
+        }
+        50% { 
+            transform: scale(1.03);
+            box-shadow: 0 0 60px rgba(245, 158, 11, 0.25);
+        }
+    }
+
+    .voice-orb-inner {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg,
+            rgba(167, 139, 250, 0.2),
+            rgba(236, 72, 153, 0.15));
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .voice-orb-inner::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            45deg,
+            transparent 30%,
+            rgba(255, 255, 255, 0.03) 50%,
+            transparent 70%
+        );
+        animation: shimmer 3s linear infinite;
+    }
+
+    @keyframes shimmer {
+        0% { transform: translateX(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    .mic-icon {
+        width: 40px;
+        height: 40px;
+        color: var(--text-primary);
+        position: relative;
+        z-index: 2;
+        transition: all 0.3s ease;
+    }
+
+    .voice-orb:hover .mic-icon {
+        transform: scale(1.1);
+        color: #a78bfa;
+    }
+
+    /* Wave Rings */
+    .wave-ring {
+        position: absolute;
+        border-radius: 50%;
+        border: 1px solid rgba(167, 139, 250, 0.15);
+        pointer-events: none;
+    }
+
+    .wave-ring-1 {
+        width: 220px;
+        height: 220px;
+        animation: waveExpand1 3s ease-out infinite;
+    }
+
+    .wave-ring-2 {
+        width: 260px;
+        height: 260px;
+        animation: waveExpand2 3s ease-out infinite 0.5s;
+    }
+
+    .wave-ring-3 {
+        width: 300px;
+        height: 300px;
+        animation: waveExpand3 3s ease-out infinite 1s;
+    }
+
+    @keyframes waveExpand1 {
+        0% { transform: scale(0.8); opacity: 0.6; border-color: rgba(167, 139, 250, 0.3); }
+        100% { transform: scale(1.3); opacity: 0; border-color: rgba(167, 139, 250, 0); }
+    }
+
+    @keyframes waveExpand2 {
+        0% { transform: scale(0.8); opacity: 0.4; }
+        100% { transform: scale(1.3); opacity: 0; }
+    }
+
+    @keyframes waveExpand3 {
+        0% { transform: scale(0.8); opacity: 0.2; }
+        100% { transform: scale(1.3); opacity: 0; }
+    }
+
+    /* Audio Visualizer Bars */
+    .visualizer {
+        position: absolute;
+        bottom: -60px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: flex-end;
+        gap: 4px;
+        height: 40px;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+
+    .visualizer.active {
+        opacity: 1;
+    }
+
+    .viz-bar {
+        width: 4px;
+        background: linear-gradient(to top, #a78bfa, #ec4899);
+        border-radius: 2px;
+        transition: height 0.1s ease;
+    }
+
+    /* Transcription Area */
+    .transcription-area {
+        width: 100%;
+        margin-top: 80px;
+        text-align: center;
+        min-height: 80px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .transcription-text {
+        font-size: 18px;
+        color: var(--text-primary);
+        font-weight: 400;
+        line-height: 1.5;
+        max-width: 100%;
+        word-wrap: break-word;
+        min-height: 27px;
+    }
+
+    .transcription-text.listening {
+        color: var(--text-secondary);
+        font-style: italic;
+    }
+
+    .transcription-text.speaking {
+        background: linear-gradient(90deg, #a78bfa, #ec4899, #a78bfa);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: textShine 3s linear infinite;
+    }
+
+    @keyframes textShine {
+        0% { background-position: 0% center; }
+        100% { background-position: 200% center; }
+    }
+
+    .hint-text {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-top: 12px;
+        font-weight: 400;
+    }
+
+    /* Bottom Controls */
+    .bottom-controls {
+        padding: 24px 0 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .action-bar {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+    }
+
+    .action-btn {
+        flex: 1;
+        max-width: 160px;
+        padding: 14px 24px;
+        border-radius: 14px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary);
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .action-btn:hover {
+        background: var(--glass-highlight);
+        border-color: rgba(255, 255, 255, 0.15);
+        color: var(--text-primary);
+        transform: translateY(-2px);
+    }
+
+    .action-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+        .app-container {
+            padding: 0 16px;
+        }
+        
+        .voice-orb-container {
+            width: 240px;
+            height: 240px;
+        }
+        
+        .voice-orb {
+            width: 150px;
+            height: 150px;
+        }
+        
+        .voice-orb-inner {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .mic-icon {
+            width: 32px;
+            height: 32px;
+        }
+        
+        .transcription-text {
+            font-size: 16px;
+        }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+    }
+</style>
+```
+
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+    <div class="noise-overlay"></div>
+
+```
+<!-- Main App -->
+<div class="app-container">
+    <!-- Header -->
+    <div class="header">
+        <div class="brand">
+            <div class="brand-icon">P</div>
+            <div class="brand-text">Pookie <span>AI</span></div>
+        </div>
+    </div>
+
+    <!-- Status -->
+    <div class="status-bar">
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-text" id="statusText">Ready to listen</span>
+    </div>
+
+    <!-- Main Visual -->
+    <div class="visual-area">
+        <div class="voice-orb-container">
+            <!-- Wave Rings -->
+            <div class="wave-ring wave-ring-1"></div>
+            <div class="wave-ring wave-ring-2"></div>
+            <div class="wave-ring wave-ring-3"></div>
+            
+            <!-- Main Orb -->
+            <div class="voice-orb" id="voiceOrb">
+                <div class="voice-orb-inner">
+                    <svg class="mic-icon" id="micIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                        <line x1="12" y1="19" x2="12" y2="22"/>
+                        <line x1="8" y1="22" x2="16" y2="22"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- Visualizer -->
+            <div class="visualizer" id="visualizer">
+                <div class="viz-bar" style="height: 8px;"></div>
+                <div class="viz-bar" style="height: 16px;"></div>
+                <div class="viz-bar" style="height: 24px;"></div>
+                <div class="viz-bar" style="height: 12px;"></div>
+                <div class="viz-bar" style="height: 20px;"></div>
+                <div class="viz-bar" style="height: 14px;"></div>
+                <div class="viz-bar" style="height: 28px;"></div>
+                <div class="viz-bar" style="height: 10px;"></div>
+                <div class="viz-bar" style="height: 18px;"></div>
+                <div class="viz-bar" style="height: 22px;"></div>
+                <div class="viz-bar" style="height: 14px;"></div>
+                <div class="viz-bar" style="height: 26px;"></div>
+                <div class="viz-bar" style="height: 12px;"></div>
+                <div class="viz-bar" style="height: 20px;"></div>
+                <div class="viz-bar" style="height: 16px;"></div>
+            </div>
+        </div>
+
+        <!-- Transcription -->
+        <div class="transcription-area">
+            <div class="transcription-text" id="transcriptionText">Tap the orb to start speaking</div>
+            <div class="hint-text" id="hintText">Tap the orb to start speaking</div>
+        </div>
+    </div>
+
+    <!-- Bottom Controls -->
+    <div class="bottom-controls">
+        <div class="action-bar">
+            <button class="action-btn" id="clearBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+                Clear
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // CONFIG â Apna Vercel URL yahan paste karo deploy ke baad
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    const BACKEND_URL = "https://YOUR_PROJECT.vercel.app/api/gemini";
+
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // DOM Elements
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    const voiceOrb      = document.getElementById('voiceOrb');
+    const statusText    = document.getElementById('statusText');
+    const statusDot     = document.getElementById('statusDot');
+    const transcriptionText = document.getElementById('transcriptionText');
+    const hintText      = document.getElementById('hintText');
+    const visualizer    = document.getElementById('visualizer');
+    const vizBars       = document.querySelectorAll('.viz-bar');
+
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // State
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    let isListening       = false;
+    let isProcessing      = false;
+    let isSpeaking        = false;
+    let visualizerInterval = null;
+    let spokenText        = "";
+
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // Web Speech API â SpeechRecognition setup
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        setStatus("Browser not supported", "error");
+        transcriptionText.textContent = "Please use Chrome or Edge for voice support.";
+    }
+
+    const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+
+    if (recognition) {
+        recognition.continuous      = false;   // Stops after one sentence
+        recognition.interimResults  = true;    // Show live transcript while speaking
+        recognition.lang            = 'en-US'; // Change to 'ur-PK' for Urdu if needed
+
+        // Live interim results â dikhao jab user bol raha ho
+        recognition.onresult = (event) => {
+            let interimText  = "";
+            let finalText    = "";
+
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalText += transcript;
+                } else {
+                    interimText += transcript;
+                }
+            }
+
+            // Show live text as user speaks
+            transcriptionText.textContent = finalText || interimText || "Listening...";
+
+            if (finalText) {
+                spokenText = finalText.trim();
+            }
+        };
+
+        // Jab recognition khatam ho â Gemini ko bhejo
+        recognition.onend = () => {
+            if (isListening) {
+                isListening = false;
+                voiceOrb.classList.remove('listening');
+                stopVisualizer();
+
+                if (spokenText) {
+                    callGemini(spokenText);
+                } else {
+                    resetToIdle();
+                    transcriptionText.textContent = "Didn't catch that. Try again.";
+                }
+            }
+        };
+
+        // Mic permission ya network error
+        recognition.onerror = (event) => {
+            console.error("Speech recognition error:", event.error);
+            isListening = false;
+            voiceOrb.classList.remove('listening');
+            stopVisualizer();
+
+            if (event.error === 'not-allowed') {
+                setStatus("Mic access denied", "error");
+                transcriptionText.textContent = "Please allow microphone access in browser settings.";
+            } else if (event.error === 'no-speech') {
+                resetToIdle();
+                transcriptionText.textContent = "No speech detected. Tap to try again.";
+            } else {
+                setStatus("Error: " + event.error, "error");
+                resetToIdle();
+            }
+        };
+    }
+
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // Orb Click Handler
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    voiceOrb.addEventListener('click', () => {
+        if (isProcessing) return; // Processing ke dauran click block
+
+        if (isSpeaking) {
+            stopSpeaking();
+        } else if (isListening) {
+            // Manually stop recognition â onend trigger hoga
+            recognition.stop();
+        } else {
+            startListening();
+        }
+    });
+
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // Start Listening â Real mic
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    function startListening() {
+        if (!recognition) return;
+
+        spokenText = "";
+        isListening = true;
+
+        voiceOrb.classList.add('listening');
+        setStatus("Listening...", "ready");
+        transcriptionText.textContent = "Listening...";
+        transcriptionText.classList.add('listening');
+        transcriptionText.classList.remove('speaking');
+        hintText.textContent = "Tap again when done speaking";
+        visualizer.classList.add('active');
+        startVisualizer();
+
+        try {
+            recognition.start();
+        } catch (e) {
+            // Already started â ignore
+        }
+    }
+
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // Call Gemini Backend
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    async function callGemini(prompt) {
+        isProcessing = true;
+        voiceOrb.classList.add('processing');
+        setStatus("Thinking...", "loading");
+        transcriptionText.classList.remove('listening');
+        hintText.textContent = "Getting response...";
+
+        try {
+            const response = await fetch(BACKEND_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const aiText = data.text || "Sorry, I couldn't get a response.";
+
+            isProcessing = false;
+            voiceOrb.classList.remove('processing');
+            startSpeaking(aiText);
+
+        } catch (error) {
+            console.error("Gemini API error:", error);
+            isProcessing = false;
+            voiceOrb.classList.remove('processing');
+            setStatus("Connection error", "error");
+            transcriptionText.textContent = "Could not reach backend. Check your BACKEND_URL.";
+            hintText.textContent = "Tap to try again";
+        }
+    }
+
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // Text-to-Speech â Real voice output
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    function startSpeaking(text) {
+        isSpeaking = true;
+        voiceOrb.classList.add('speaking');
+        setStatus("Speaking...", "ready");
+
+        transcriptionText.textContent = text;
+        transcriptionText.classList.add('speaking');
+        transcriptionText.classList.remove('listening');
+        hintText.textContent = "Tap to interrupt";
+        visualizer.classList.add('active');
+        startVisualizer();
+
+        // Web Speech Synthesis
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate   = 1.0;  // Speed: 0.5 (slow) to 2.0 (fast)
+        utterance.pitch  = 1.0;  // Pitch: 0 to 2
+        utterance.volume = 1.0;
+
+        // Prefer a natural-sounding English voice
+        const voices = window.speechSynthesis.getVoices();
+        const preferred = voices.find(v =>
+            v.name.includes("Google") ||
+            v.name.includes("Samantha") ||
+            v.name.includes("Karen") ||
+            v.lang === "en-US"
+        );
+        if (preferred) utterance.voice = preferred;
+
+        utterance.onend = () => {
+            stopSpeaking();
+        };
+
+        utterance.onerror = () => {
+            stopSpeaking();
+        };
+
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function stopSpeaking() {
+        window.speechSynthesis.cancel();
+        isSpeaking = false;
+        voiceOrb.classList.remove('speaking');
+        transcriptionText.classList.remove('speaking');
+        resetToIdle();
+    }
+
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // Helpers
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    function resetToIdle() {
+        setStatus("Ready to listen", "ready");
+        hintText.textContent = "Tap the orb to start speaking";
+        stopVisualizer();
+    }
+
+    function setStatus(text, type) {
+        statusText.textContent = text;
+        statusDot.className = "status-dot";
+        if (type === "error") statusDot.classList.add("error");
+        if (type === "loading") statusDot.classList.add("loading");
+    }
+
+    function startVisualizer() {
+        clearInterval(visualizerInterval);
+        visualizerInterval = setInterval(() => {
+            vizBars.forEach(bar => {
+                const height = Math.random() * 32 + 4;
+                bar.style.height = height + 'px';
+            });
+        }, 100);
+    }
+
+    function stopVisualizer() {
+        clearInterval(visualizerInterval);
+        visualizer.classList.remove('active');
+        vizBars.forEach(bar => { bar.style.height = '4px'; });
+    }
+
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // Clear Button
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    document.getElementById('clearBtn').addEventListener('click', () => {
+        if (recognition) recognition.abort();
+        window.speechSynthesis.cancel();
+        isListening  = false;
+        isProcessing = false;
+        isSpeaking   = false;
+        voiceOrb.classList.remove('listening', 'speaking', 'processing');
+        transcriptionText.textContent = "Tap the orb to start speaking";
+        transcriptionText.classList.remove('listening', 'speaking');
+        resetToIdle();
+    });
+
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // Spacebar shortcut
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && e.target === document.body) {
+            e.preventDefault();
+            voiceOrb.click();
+        }
+    });
+
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // Load voices (some browsers load them async)
+    // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    window.speechSynthesis.onvoiceschanged = () => {
+        // Voices loaded â nothing to do, used at speak time
+    };
+</script>
+```
+
+</body>
+</html>
