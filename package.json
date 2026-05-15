@@ -2,7 +2,6 @@
   "name": "pookie-ai-backend",
   "version": "1.0.0",
   "description": "Pookie AI — Vercel serverless backend for Gemini voice responses",
-  "type": "module",
   "dependencies": {
     "@google/generative-ai": "latest"
   },
