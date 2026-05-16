@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>Pookie AI — Your Magical AI Companion</title>
+<meta name="description" content="Pookie AI — a glassy AI companion with realistic voices, stories for kids, and many fun modes. Powered by Google AI Studio." />
+<link rel="stylesheet" href="styles.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="bg-orbs">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+
+  <header class="top-bar">
+    <button class="icon-btn" id="menuBtn" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    <div class="mode-pill" id="modePill">
+      <span class="mode-emoji">💕</span>
+      <span class="mode-label">Girlfriend</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="caret"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </header>
+
+  <!-- ONBOARDING -->
+  <main id="onboarding" class="screen">
+    <div class="glass-card onboard-card">
+      <div class="logo-orb">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>
+      </div>
+      <h1 class="brand-title">MEET POOKIE</h1>
+      <p class="brand-sub">Your magical AI companion — let's get to know you</p>
+
+      <div class="dots">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+
+      <!-- step 1: name -->
+      <div class="step" data-step="1">
+        <label class="field-label">WHAT'S YOUR NAME?</label>
+        <input type="text" id="nameInput" placeholder="Enter your name" autocomplete="off" />
+      </div>
+
+      <!-- step 2: age -->
+      <div class="step hidden" data-step="2">
+        <label class="field-label">HOW OLD ARE YOU?</label>
+        <input type="number" id="ageInput" placeholder="Your age" min="3" max="120" />
+      </div>
+
+      <!-- step 3: api key -->
+      <div class="step hidden" data-step="3">
+        <label class="field-label">GOOGLE AI STUDIO API KEY</label>
+        <input type="password" id="apiKeyInput" placeholder="Paste your AI Studio API key" />
+        <p class="hint">Get a free key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com</a>. Stored only on your device.</p>
+      </div>
+
+      <button id="continueBtn" class="primary-btn">
+        <span>CONTINUE</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </main>
+
+  <!-- CHAT -->
+  <main id="chat" class="screen hidden">
+    <div class="chat-header glass-card">
+      <div class="chat-avatar" id="chatAvatar">💕</div>
+      <div class="chat-meta">
+        <div class="chat-name" id="chatName">Pookie</div>
+        <div class="chat-status"><span class="dot-live"></span> Online · <span id="chatModeLabel">Girlfriend</span></div>
+      </div>
+      <button class="icon-btn small" id="voiceToggle" title="Toggle voice">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+      </button>
+    </div>
+
+    <div class="messages" id="messages"></div>
+
+    <form class="composer glass-card" id="composer">
+      <input type="text" id="msgInput" placeholder="Type a message…" autocomplete="off" />
+      <button type="button" class="icon-btn round" id="micBtn" title="Voice input">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><path d="M12 19v4M8 23h8"/></svg>
+      </button>
+      <button type="submit" class="primary-btn send-btn" id="sendBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+    </form>
+  </main>
+
+  <!-- MODE PICKER -->
+  <div class="sheet hidden" id="modeSheet">
+    <div class="sheet-backdrop"></div>
+    <div class="sheet-content glass-card">
+      <div class="sheet-handle"></div>
+      <h3>Choose a mode</h3>
+      <div class="mode-grid" id="modeGrid"></div>
+    </div>
+  </div>
+
+  <!-- SIDE MENU -->
+  <div class="sheet hidden" id="menuSheet">
+    <div class="sheet-backdrop"></div>
+    <div class="sheet-content glass-card side">
+      <div class="sheet-handle"></div>
+      <h3>Pookie AI</h3>
+      <button class="menu-item" data-action="reset">🔄 Reset chat</button>
+      <button class="menu-item" data-action="apikey">🔑 Change API key</button>
+      <button class="menu-item" data-action="privacy">🛡️ Privacy policy</button>
+      <button class="menu-item" data-action="about">✨ About</button>
+    </div>
+  </div>
+
+  <!-- PRIVACY MODAL -->
+  <div class="sheet hidden" id="privacySheet">
+    <div class="sheet-backdrop"></div>
+    <div class="sheet-content glass-card tall">
+      <div class="sheet-handle"></div>
+      <h3>Privacy Policy</h3>
+      <div class="prose">
+        <p><strong>Pookie AI</strong> is built for <strong>entertainment purposes only</strong>.</p>
+        <p>This is a serverless static web app. Your name, age, chosen mode, and Google AI Studio API key are stored <strong>only in your browser's local storage</strong> — nothing is sent to our servers (there are no servers).</p>
+        <p>When you chat, your messages are sent directly from your browser to Google's Generative Language API using <em>your</em> API key. Please review Google's terms separately.</p>
+        <p>Voice playback uses your device's built-in speech synthesis. No audio is recorded or transmitted.</p>
+        <p>Do not share personal, financial, or sensitive information. Responses are AI-generated and may be inaccurate.</p>
+        <p style="opacity:.7;margin-top:18px">Crafted by <strong>zdev</strong> · For entertainment only.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">Made with 💖 · <span class="zdev">zdev</span></footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
