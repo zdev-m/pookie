@@ -1,162 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-<title>Pookie AI — Your Magical AI Companion</title>
-<meta name="description" content="Pookie AI — a glassy AI companion with realistic voices, stories for kids, and many fun modes. Powered by Google AI Studio." />
-<link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1,user-scalable=no"/>
+<title>Pookie AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
-  <div class="bg-orbs">
-    <div class="orb orb1"></div>
-    <div class="orb orb2"></div>
-    <div class="orb orb3"></div>
-  </div>
 
+<!-- Animated background -->
+<div class="bg-orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<!-- ONBOARDING -->
+<main id="onboarding" class="screen">
+  <div class="glass-card onboard-card">
+    <div class="logo-orb">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>
+    </div>
+    <h1 class="brand-title">MEET POOKIE</h1>
+    <p class="brand-sub">Your AI companion — let's get to know you</p>
+
+    <div class="dots">
+      <span class="dot active"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+
+    <!-- Step 1: Name -->
+    <div class="step" data-step="1">
+      <label class="field-label">WHAT'S YOUR NAME?</label>
+      <input type="text" id="nameInput" placeholder="Enter your name" autocomplete="off"/>
+    </div>
+
+    <!-- Step 2: Gemini API Key -->
+    <div class="step hidden" data-step="2">
+      <label class="field-label">GOOGLE AI STUDIO KEY</label>
+      <input type="password" id="apiKeyInput" placeholder="Paste your Gemini API key"/>
+      <p class="hint">Get free key from <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a>. Stored only on device.</p>
+    </div>
+
+    <!-- Step 3: ElevenLabs -->
+    <div class="step hidden" data-step="3">
+      <label class="field-label">ELEVENLABS API KEY</label>
+      <input type="password" id="elKeyInput" placeholder="Paste ElevenLabs key (optional)"/>
+      <label class="field-label" style="margin-top:16px">VOICE ID</label>
+      <input type="text" id="elVoiceInput" placeholder="EXAVITQu4vr4xnSDxMaL (Sarah)"/>
+      <p class="hint">Optional — get free key from <a href="https://elevenlabs.io" target="_blank">elevenlabs.io</a>. Leave empty to use device voice.</p>
+    </div>
+
+    <!-- Step 4: Mode -->
+    <div class="step hidden" data-step="4">
+      <label class="field-label">CHOOSE YOUR POOKIE</label>
+      <div class="mode-grid-onboard" id="modeGridOnboard"></div>
+    </div>
+
+    <button id="continueBtn" class="primary-btn">
+      <span>CONTINUE</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+</main>
+
+<!-- VOICE ASSISTANT — Maira Style -->
+<main id="chat" class="screen hidden voice-screen">
+
+  <!-- Top bar -->
   <header class="top-bar">
-    <button class="icon-btn" id="menuBtn" aria-label="Menu">
+    <button class="icon-btn" id="menuBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
     </button>
     <div class="mode-pill" id="modePill">
-      <span class="mode-emoji">💕</span>
-      <span class="mode-label">Girlfriend</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="caret"><path d="M6 9l6 6 6-6"/></svg>
+      <span class="mode-emoji" id="modePillEmoji">💕</span>
+      <span class="mode-label" id="modePillLabel">Girlfriend</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;opacity:.6"><path d="M6 9l6 6 6-6"/></svg>
     </div>
+    <button class="icon-btn" id="stopBtn" title="Stop">
+      <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+    </button>
   </header>
 
-  <!-- ONBOARDING -->
-  <main id="onboarding" class="screen">
-    <div class="glass-card onboard-card">
-      <div class="logo-orb">
-        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>
-      </div>
-      <h1 class="brand-title">MEET POOKIE</h1>
-      <p class="brand-sub">Your magical AI companion — let's get to know you</p>
-
-      <div class="dots">
-        <span class="dot active"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-      </div>
-
-      <!-- step 1: name -->
-      <div class="step" data-step="1">
-        <label class="field-label">WHAT'S YOUR NAME?</label>
-        <input type="text" id="nameInput" placeholder="Enter your name" autocomplete="off" />
-      </div>
-
-      <!-- step 2: age -->
-      <div class="step hidden" data-step="2">
-        <label class="field-label">HOW OLD ARE YOU?</label>
-        <input type="number" id="ageInput" placeholder="Your age" min="3" max="120" />
-      </div>
-
-      <!-- step 3: api key -->
-      <div class="step hidden" data-step="3">
-        <label class="field-label">GOOGLE AI STUDIO API KEY</label>
-        <input type="password" id="apiKeyInput" placeholder="Paste your AI Studio API key" />
-        <p class="hint">Get a free key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com</a>. Stored only on your device.</p>
-      </div>
-
-      <button id="continueBtn" class="primary-btn">
-        <span>CONTINUE</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </button>
-    </div>
-  </main>
-
-  <!-- VOICE ASSISTANT -->
-  <main id="chat" class="screen hidden voice-screen">
-    <div class="chat-header glass-card">
-      <div class="chat-avatar" id="chatAvatar">💕</div>
-      <div class="chat-meta">
-        <div class="chat-name" id="chatName">Pookie</div>
-        <div class="chat-status"><span class="dot-live"></span> <span id="chatModeLabel">Girlfriend</span></div>
-      </div>
-      <button class="icon-btn small" id="voiceToggle" title="Toggle voice">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
-      </button>
-    </div>
-
-    <div class="voice-stage">
-      <div class="voice-orb" id="voiceOrb">
-        <div class="ring r1"></div>
-        <div class="ring r2"></div>
-        <div class="ring r3"></div>
-        <div class="orb-core" id="orbCore">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><path d="M12 19v4M8 23h8"/></svg>
-        </div>
-      </div>
-      <div class="voice-status" id="voiceStatus">Tap the mic to talk</div>
-      <div class="bubble user-bubble" id="userBubbleWrap">
-        <div class="bubble-label">You</div>
-        <div class="bubble-text" id="voiceTranscript">—</div>
-      </div>
-      <div class="bubble ai-bubble" id="aiBubbleWrap">
-        <div class="bubble-label">Pookie</div>
-        <div class="bubble-text" id="voiceReply">—</div>
+  <!-- Central orb stage -->
+  <div class="orb-stage">
+    <div class="voice-orb" id="voiceOrb" data-phase="idle">
+      <div class="wave w1"></div>
+      <div class="wave w2"></div>
+      <div class="wave w3"></div>
+      <div class="wave w4"></div>
+      <div class="orb-core" id="orbCore">
+        <div class="orb-inner-glow"></div>
+        <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+          <path d="M19 10v2a7 7 0 01-14 0v-2"/>
+          <path d="M12 19v4M8 23h8"/>
+        </svg>
       </div>
     </div>
 
-    <div class="voice-controls glass-card">
-      <button class="icon-btn" id="resetBtn" title="Reset conversation">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
-      </button>
-      <button class="big-mic" id="micBtn" title="Tap to talk">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><path d="M12 19v4M8 23h8"/></svg>
-      </button>
-      <button class="icon-btn" id="stopBtn" title="Stop speaking">
-        <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
-      </button>
-    </div>
-  </main>
-
-  <!-- MODE PICKER -->
-  <div class="sheet hidden" id="modeSheet">
-    <div class="sheet-backdrop"></div>
-    <div class="sheet-content glass-card">
-      <div class="sheet-handle"></div>
-      <h3>Choose a mode</h3>
-      <div class="mode-grid" id="modeGrid"></div>
-    </div>
+    <!-- Status label -->
+    <div class="orb-status" id="orbStatus">Tap to talk</div>
   </div>
 
-  <!-- SIDE MENU -->
-  <div class="sheet hidden" id="menuSheet">
-    <div class="sheet-backdrop"></div>
-    <div class="sheet-content glass-card side">
-      <div class="sheet-handle"></div>
-      <h3>Pookie AI</h3>
-      <button class="menu-item" data-action="reset">🔄 Reset chat</button>
-      <button class="menu-item" data-action="apikey">🔑 Change API key</button>
-      <button class="menu-item" data-action="privacy">🛡️ Privacy policy</button>
-      <button class="menu-item" data-action="about">✨ About</button>
+  <!-- Footer -->
+  <footer class="voice-footer">
+    <button class="ghost-btn" id="resetBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+      Reset
+    </button>
+    <div class="footer-brand">Pookie <span class="by-zdev">by zdev</span></div>
+    <div class="el-badge hidden" id="elBadge">⚡ ElevenLabs</div>
+  </footer>
+</main>
+
+<!-- MODE PICKER SHEET -->
+<div class="sheet hidden" id="modeSheet">
+  <div class="sheet-backdrop"></div>
+  <div class="sheet-content glass-card">
+    <div class="sheet-handle"></div>
+    <h3>Choose Your Pookie</h3>
+    <div class="mode-grid" id="modeGrid"></div>
+  </div>
+</div>
+
+<!-- MENU SHEET -->
+<div class="sheet hidden" id="menuSheet">
+  <div class="sheet-backdrop"></div>
+  <div class="sheet-content glass-card">
+    <div class="sheet-handle"></div>
+    <h3>Menu</h3>
+    <button class="menu-item" data-action="reset">🔄 Reset chat</button>
+    <button class="menu-item" data-action="apikey">🔑 Change API keys</button>
+    <button class="menu-item" data-action="privacy">🛡️ Privacy</button>
+  </div>
+</div>
+
+<!-- PRIVACY SHEET -->
+<div class="sheet hidden" id="privacySheet">
+  <div class="sheet-backdrop"></div>
+  <div class="sheet-content glass-card tall">
+    <div class="sheet-handle"></div>
+    <h3>Privacy</h3>
+    <div class="prose">
+      <p><strong>Pookie AI</strong> is for entertainment only.</p>
+      <p>All data (name, API keys, chat history) stays in your browser's localStorage. Nothing is sent to any server except Google Gemini and ElevenLabs using your own API keys.</p>
+      <p>Do not share sensitive personal information. AI responses may be inaccurate.</p>
     </div>
   </div>
+</div>
 
-  <!-- PRIVACY MODAL -->
-  <div class="sheet hidden" id="privacySheet">
-    <div class="sheet-backdrop"></div>
-    <div class="sheet-content glass-card tall">
-      <div class="sheet-handle"></div>
-      <h3>Privacy Policy</h3>
-      <div class="prose">
-        <p><strong>Pookie AI</strong> is built for <strong>entertainment purposes only</strong>.</p>
-        <p>This is a serverless static web app. Your name, age, chosen mode, and Google AI Studio API key are stored <strong>only in your browser's local storage</strong> — nothing is sent to our servers (there are no servers).</p>
-        <p>When you chat, your messages are sent directly from your browser to Google's Generative Language API using <em>your</em> API key. Please review Google's terms separately.</p>
-        <p>Voice playback uses your device's built-in speech synthesis. No audio is recorded or transmitted.</p>
-        <p>Do not share personal, financial, or sensitive information. Responses are AI-generated and may be inaccurate.</p>
-        <p style="opacity:.7;margin-top:18px">Crafted by <strong>zdev</strong> · For entertainment only.</p>
-      </div>
-    </div>
-  </div>
-
-  <footer class="footer">Developed by · <span class="zdev">zdev</span></footer>
-
-  <script src="app.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
