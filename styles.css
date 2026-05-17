@@ -239,3 +239,82 @@ input:focus{outline:none;border-color:rgba(255,61,119,.6);background:rgba(0,0,0,
   .onboard-card{padding:32px 22px}
   .messages{max-height:calc(100vh - 240px)}
 }
+
+/* ============ VOICE ASSISTANT ============ */
+.voice-screen{padding:14px;gap:14px;display:flex;flex-direction:column}
+.voice-stage{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:22px;padding:30px 16px;text-align:center;
+}
+.voice-orb{
+  position:relative;width:240px;height:240px;cursor:pointer;
+  display:grid;place-items:center;
+}
+.voice-orb .ring{
+  position:absolute;inset:0;border-radius:50%;
+  background:var(--grad);opacity:.18;filter:blur(2px);
+  transform:scale(.6);transition:transform .4s, opacity .4s;
+}
+.voice-orb .r2{opacity:.12;animation:none}
+.voice-orb .r3{opacity:.08}
+.orb-core{
+  position:relative;width:140px;height:140px;border-radius:50%;
+  background:var(--grad);display:grid;place-items:center;color:white;
+  box-shadow:0 0 60px rgba(255,61,119,.55), inset 0 0 30px rgba(255,255,255,.18);
+  transition:transform .25s;
+}
+.orb-core svg{width:54px;height:54px}
+
+/* Phases */
+.voice-orb[data-phase="idle"] .r1{animation:pulseRing 3s ease-in-out infinite}
+.voice-orb[data-phase="listening"] .ring{animation:pulseRing 1s ease-in-out infinite;opacity:.35}
+.voice-orb[data-phase="listening"] .orb-core{background:linear-gradient(135deg,#3ddc97,#3da6ff);box-shadow:0 0 70px rgba(61,220,151,.6)}
+.voice-orb[data-phase="thinking"] .ring{animation:spinRing 1.4s linear infinite;opacity:.3}
+.voice-orb[data-phase="thinking"] .orb-core{background:linear-gradient(135deg,#b04bff,#6b4dff)}
+.voice-orb[data-phase="speaking"] .ring{animation:pulseRing .8s ease-in-out infinite;opacity:.4}
+.voice-orb[data-phase="speaking"] .orb-core{animation:wobble .6s ease-in-out infinite}
+
+@keyframes pulseRing{0%,100%{transform:scale(.65);opacity:.15}50%{transform:scale(1);opacity:.35}}
+@keyframes spinRing{from{transform:scale(.9) rotate(0)}to{transform:scale(.9) rotate(360deg)}}
+@keyframes wobble{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+
+.voice-status{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:14px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);
+}
+.voice-transcript{
+  min-height:24px;font-size:14px;color:#b8aed0;font-style:italic;
+  max-width:480px;line-height:1.5;
+}
+.voice-reply{
+  font-size:18px;line-height:1.55;color:var(--text);font-weight:500;
+  max-width:520px;min-height:30px;
+  background:var(--glass);border:1px solid var(--border);
+  backdrop-filter:blur(20px);padding:16px 20px;border-radius:20px;
+}
+.voice-reply:empty{display:none}
+
+.voice-controls{
+  display:flex;align-items:center;justify-content:space-around;
+  padding:14px 22px;gap:14px;
+}
+.big-mic{
+  width:74px;height:74px;border-radius:50%;
+  background:var(--grad);color:white;display:grid;place-items:center;
+  border:none;cursor:pointer;
+  box-shadow:0 14px 40px -8px rgba(255,61,119,.6), inset 0 1px 0 rgba(255,255,255,.2);
+  transition:transform .15s;
+}
+.big-mic:hover{transform:translateY(-2px)}
+.big-mic:active{transform:scale(.96)}
+.big-mic svg{width:30px;height:30px}
+
+@media (max-width:520px){
+  .voice-orb{width:200px;height:200px}
+  .orb-core{width:120px;height:120px}
+  .orb-core svg{width:46px;height:46px}
+  .voice-reply{font-size:16px;padding:14px 16px}
+  .big-mic{width:66px;height:66px}
+  .big-mic svg{width:26px;height:26px}
+}
