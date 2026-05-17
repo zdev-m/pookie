@@ -154,16 +154,47 @@ function showChat() {
   onboarding.classList.add('hidden');
   chat.classList.remove('hidden');
   setPhase('idle');
+  unlockAudio();
   if (state.history.length === 0) greet();
+}
+
+// Browsers require a user gesture to start audio. Continue button counts.
+let audioUnlocked = false;
+function unlockAudio(){
+  if (audioUnlocked) return;
+  try {
+    const u = new SpeechSynthesisUtterance(' ');
+    u.volume = 0; u.rate = 1;
+    speechSynthesis.speak(u);
+    audioUnlocked = true;
+  } catch {}
+}
+
+// Wait until at least one voice is available
+function ensureVoices(timeout=1500){
+  return new Promise(res=>{
+    if (voices && voices.length) return res();
+    const t0 = Date.now();
+    const tick = () => {
+      voices = speechSynthesis.getVoices();
+      if (voices.length || Date.now()-t0 > timeout) return res();
+      setTimeout(tick, 80);
+    };
+    tick();
+  });
 }
 
 function setPhase(p) {
   state.phase = p;
   voiceOrb.dataset.phase = p;
+  const userWrap = document.getElementById('userBubbleWrap');
+  const aiWrap = document.getElementById('aiBubbleWrap');
+  userWrap.classList.toggle('live', p === 'listening');
+  aiWrap.classList.toggle('live', p === 'speaking' || p === 'thinking');
   if (p === 'idle') voiceStatus.textContent = 'Tap the mic to talk';
-  if (p === 'listening') voiceStatus.textContent = 'Listening…';
-  if (p === 'thinking') voiceStatus.textContent = 'Pookie is thinking…';
-  if (p === 'speaking') voiceStatus.textContent = 'Pookie is speaking…';
+  if (p === 'listening') voiceStatus.textContent = '🎙️ Listening… speak now';
+  if (p === 'thinking') voiceStatus.textContent = '✨ Pookie is thinking…';
+  if (p === 'speaking') voiceStatus.textContent = '🔊 Pookie is speaking…';
 }
 
 function resetConversation() {
@@ -288,21 +319,30 @@ function stripForSpeech(t) {
   return t.replace(/[\*_`#>]/g, '').replace(/\p{Extended_Pictographic}/gu, '').trim();
 }
 
-function speak(text) {
+async function speak(text) {
   if (!('speechSynthesis' in window)) { setPhase('idle'); return; }
   speechSynthesis.cancel();
-  if (!state.voiceOn) { setPhase('idle'); return; }
+  if (!state.voiceOn) { setPhase('idle'); autoListenAfterReply(); return; }
   const cleaned = stripForSpeech(text);
-  if (!cleaned) { setPhase('idle'); return; }
+  if (!cleaned) { setPhase('idle'); autoListenAfterReply(); return; }
+  await ensureVoices();
   const u = new SpeechSynthesisUtterance(cleaned);
   const cfg = MODES[state.mode].voice;
   const v = pickVoice(cfg);
   if (v) u.voice = v;
   u.lang = cfg.lang; u.pitch = cfg.pitch; u.rate = cfg.rate;
   u.onstart = () => setPhase('speaking');
-  u.onend = () => setPhase('idle');
-  u.onerror = () => setPhase('idle');
+  u.onend = () => { setPhase('idle'); autoListenAfterReply(); };
+  u.onerror = () => { setPhase('idle'); autoListenAfterReply(); };
   speechSynthesis.speak(u);
+}
+
+// After Pookie finishes speaking, automatically open the mic again
+// for a natural back-and-forth conversation (Maira-style).
+let autoListen = true;
+function autoListenAfterReply(){
+  if (!autoListen) return;
+  setTimeout(()=>{ if (state.phase==='idle' && !listening) startListening(); }, 350);
 }
 
 voiceToggle.addEventListener('click', () => {
@@ -316,7 +356,7 @@ function updateVoiceButton() {
   voiceToggle.title = state.voiceOn ? 'Voice on' : 'Voice off';
 }
 
-stopBtn.addEventListener('click', () => { speechSynthesis.cancel(); stopListening(); setPhase('idle'); });
+stopBtn.addEventListener('click', () => { autoListen=false; speechSynthesis.cancel(); stopListening(); setPhase('idle'); setTimeout(()=>autoListen=true, 1500); });
 resetBtn.addEventListener('click', resetConversation);
 
 // ===== Speech Recognition =====

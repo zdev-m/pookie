@@ -91,9 +91,15 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><path d="M12 19v4M8 23h8"/></svg>
         </div>
       </div>
-      <div class="voice-status" id="voiceStatus">Tap to talk</div>
-      <div class="voice-transcript" id="voiceTranscript"></div>
-      <div class="voice-reply" id="voiceReply"></div>
+      <div class="voice-status" id="voiceStatus">Tap the mic to talk</div>
+      <div class="bubble user-bubble" id="userBubbleWrap">
+        <div class="bubble-label">You</div>
+        <div class="bubble-text" id="voiceTranscript">—</div>
+      </div>
+      <div class="bubble ai-bubble" id="aiBubbleWrap">
+        <div class="bubble-label">Pookie</div>
+        <div class="bubble-text" id="voiceReply">—</div>
+      </div>
     </div>
 
     <div class="voice-controls glass-card">
